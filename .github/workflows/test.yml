@@ -12,31 +12,37 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        architecture: [amd64, aarch64]
-    runs-on: ${{ (matrix.architecture == 'amd64' && 'ubuntu-latest') || (matrix.architecture == 'aarch64' && 'ubuntu-22.04-arm') }}
+        include:
+          - architecture: amd64
+            platform: linux/amd64
+            runs-on: ubuntu-latest
+          - architecture: aarch64
+            platform: linux/arm64
+            runs-on: ubuntu-22.04-arm
+    runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      # The addon version is "<addon_version>-<sure_version>" and nothing passes
+      # --build-arg, so the Dockerfile default is what actually ships. Fail loudly
+      # if a hand edit lets the two drift apart.
+      - name: Check version consistency
+        run: |
+          SURE_VERSION=$(grep -oP '(?<=^ARG SURE_VERSION=).+' sure/Dockerfile)
+          CONFIG_SURE_VERSION=$(grep -oP '(?<=^version: ).+' sure/config.yaml | cut -d- -f2-)
+          if [ "$SURE_VERSION" != "$CONFIG_SURE_VERSION" ]; then
+            echo "Dockerfile ships Sure $SURE_VERSION but config.yaml advertises $CONFIG_SURE_VERSION" >&2
+            exit 1
+          fi
+          echo "Both pin Sure $SURE_VERSION"
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image (test only)
+        working-directory: sure
         run: |
-          cd maybe_finance
-          IMAGE_NAME=ghcr.io/m123-dev/${{ matrix.architecture }}-maybe_finance_homeassistant
           docker buildx build \
-            --platform linux/${{ matrix.architecture }} \
-            --build-arg BUILD_ARCH=${{ matrix.architecture }} \
+            --platform ${{ matrix.platform }} \
             -f Dockerfile .
-
-#             --cache-from=type=registry,ref=$CACHE_IMAGE \
-#--cache-to=type=registry,ref=$CACHE_IMAGE,mode=max \
-

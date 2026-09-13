@@ -1,6 +1,8 @@
-DISCLAIMER: This repository is a **third-party port** of the Maybe Finance project for Home Assistant. Maybe Finance is an independent project, which can be found at [https://github.com/maybe-finance/maybe](https://github.com/maybe-finance/maybe).
+DISCLAIMER: This repository is a **third-party packaging** of the Sure project for Home Assistant. Sure is an independent project, which can be found at [https://github.com/we-promise/sure](https://github.com/we-promise/sure).
 
-All trademarks, including the Maybe Finance logo, are the property of their respective owners. This project is **not affiliated with, endorsed by, or officially supported** by Maybe Finance. It is provided as a community-driven adaptation for Home Assistant users.
+All trademarks, including the Sure name and logo, are the property of their respective owners. This project is **not affiliated with, endorsed by, or officially supported** by Sure. It is provided as a community-driven adaptation for Home Assistant users.
+
+This add-on was previously a packaging of Maybe Finance ([https://github.com/maybe-finance/maybe](https://github.com/maybe-finance/maybe)), which is no longer maintained.
 
 
                     GNU AFFERO GENERAL PUBLIC LICENSE

@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   check_version:
     runs-on: ubuntu-latest
@@ -12,30 +15,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Fetch last commit to compare changes
+          fetch-depth: 2 # Fetch last commit to compare changes
 
       - name: Extract version from config.yaml
-        id: get_version
         run: |
-          VERSION=$(grep '^version:' maybe_finance/config.yaml | awk '{print $2}')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          VERSION=$(grep '^version:' sure/config.yaml | awk '{print $2}')
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Check if version changed
-        id: check_version
         run: |
-          if git diff HEAD^ HEAD -- maybe_finance/config.yaml | grep '^+version:'; then
-            echo "VERSION_CHANGED=true" >> $GITHUB_ENV
+          if git diff HEAD^ HEAD -- sure/config.yaml | grep -q '^+version:'; then
+            echo "VERSION_CHANGED=true" >> "$GITHUB_ENV"
           else
-            echo "VERSION_CHANGED=false" >> $GITHUB_ENV
+            echo "VERSION_CHANGED=false" >> "$GITHUB_ENV"
           fi
 
+      # A release created with GITHUB_TOKEN does not trigger other workflows, so
+      # the release event alone will not start publish.yaml unless a RELEASE_TOKEN
+      # PAT is set. The image is not at risk either way: publish.yaml also runs on
+      # the push to main that changed sure/**, so this release is cosmetic.
       - name: Create Release if Version Changed
         if: env.VERSION_CHANGED == 'true'
-        uses: actions/create-release@v1
-        with:
-          tag_name: "v${{ env.VERSION }}"
-          release_name: "v${{ env.VERSION }}"
-          draft: false
-          prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.MAYBE_HASS_RELEASE }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ env.VERSION }}" \
+            --title "v${{ env.VERSION }}" \
+            --generate-notes
