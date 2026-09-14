@@ -102,6 +102,29 @@ Additionally, there is a **button in the addon interface** to open the web UI di
 
 ---
 
+## Testing prereleases: the Edge channel
+
+The same repository also publishes **Sure (Finances) Edge**, an opt-in channel that tracks upstream Sure prereleases (`v*-alpha.*`) instead of stable releases. It is the same addon wrapper — identical options, same startup script — pinned to a newer, unfinished Sure. A workflow checks upstream daily and opens a version-bump PR whenever a new alpha is published.
+
+Install it the same way as the stable addon: it shows up in the Add-on Store alongside **Sure (Finances)** once you have added this repository.
+
+> [!WARNING]
+> Alpha builds run unreleased database migrations on boot, and those are not designed to be reversible. Give the edge addon its own database and back up before every update. Pointing it at the database your stable addon uses can leave that database on a schema the stable release cannot read.
+
+The two addons are independent to Home Assistant — separate `/data` volumes, separate options — so you can run both at once. Two defaults differ to keep them from colliding:
+
+| | Sure (Finances) | Sure (Finances) Edge |
+| --- | --- | --- |
+| Slug | `sure` | `sure-edge` |
+| Tracks | Latest Sure release | Latest Sure prerelease |
+| Default host port | `1234` | `1235` |
+| Default `postgres_db` | `postgres` | `sure_edge` |
+| Update checks | Weekly | Daily |
+
+There is no automatic promotion between the channels: the stable addon keeps tracking stable releases, and nothing you do in the edge addon affects it. Report anything you find against [the Sure repository](https://github.com/we-promise/sure) if it is an application bug, or [this repository](https://github.com/imcvampire/sure-hass/) if it is the addon wrapper.
+
+---
+
 ## Migrating from the Maybe Finance addon
 
 The addon slug changed from `maybe_finance` to `sure`, so Home Assistant will not upgrade the old addon in place — it appears as a new one.

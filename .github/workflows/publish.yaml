@@ -25,6 +25,9 @@ concurrency:
 jobs:
   publish:
     name: Build and Push to GHCR
+    # Edge prereleases also fire "release: published", and rebuilding here would
+    # re-tag the stable :latest image from an unchanged stable config.
+    if: ${{ github.event_name != 'release' || !startsWith(github.event.release.tag_name, 'edge-') }}
     strategy:
       fail-fast: false
       matrix:
