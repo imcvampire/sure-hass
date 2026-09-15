@@ -35,6 +35,12 @@ schema:
   rails_assume_ssl: bool
   onboarding_state: list(open|invite_only|closed)
   openai_access_token: str?
+  # Escape hatch for anything Sure reads that this addon has no option for.
+  # A list of dicts is "required" to the Supervisor -- unlike ["str?"], it has no
+  # per-entry optional marker -- so the empty default below has to stay.
+  env_vars:
+    - name: str
+      value: str
 options:
   postgres_user: "postgres"
   postgres_password: "homeassistant"
@@ -49,5 +55,6 @@ options:
   rails_force_ssl: false
   rails_assume_ssl: false
   onboarding_state: "open"
-version: 0.6.0-0.7.5-alpha.8
+  env_vars: []
+version: 0.7.0-0.7.5-alpha.8
 image: ghcr.io/imcvampire/{arch}-sure-edge-homeassistant

@@ -60,6 +60,36 @@ export SELF_HOSTED RAILS_FORCE_SSL RAILS_ASSUME_SSL ONBOARDING_STATE
 [ -n "$PLAID_ENV" ] && export PLAID_ENV
 [ -n "$OPENAI_ACCESS_TOKEN" ] && export OPENAI_ACCESS_TOKEN
 
+# Custom environment variables: the escape hatch for anything Sure reads that
+# this addon has no option of its own for (SMTP settings, alternative AI
+# providers, Rails tuning). Exported after the mapped options on purpose, so an
+# entry that reuses one of their names wins and nobody is stuck with a value
+# this wrapper decided for them.
+#
+# Both halves come back base64-encoded because a value may legitimately contain
+# newlines (a PEM key) and a name may contain one until it is validated below;
+# pairing raw lines would desynchronise the loop. @base64 works on jq 1.6, which
+# is what Debian ships -- --raw-output0 does not.
+custom_env_names=()
+while IFS= read -r encoded_name && IFS= read -r encoded_value; do
+    name=$(printf '%s' "$encoded_name" | base64 -d)
+    value=$(printf '%s' "$encoded_value" | base64 -d)
+
+    # Refuse rather than skip: a name the shell cannot export would otherwise
+    # leave the user with a setting that looks applied in the UI but is not.
+    if [[ ! "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+        echo "Invalid env_vars name '${name}': use letters, digits and underscores, not starting with a digit" >&2
+        exit 1
+    fi
+
+    export "${name}=${value}"
+    custom_env_names+=("$name")
+done < <(jq --raw-output '(.env_vars // [])[] | (.name | @base64), (.value | @base64)' "$CONFIG_PATH")
+
+# Names only. Any of these can hold a credential, and unlike the options above
+# there is no way to tell which.
+echo "ENV_VARS: ${custom_env_names[*]:-(none)} (values hidden)"
+
 # /rails/storage is a symlink to this path (see Dockerfile), so Active Storage
 # uploads land on the add-on's persistent volume.
 mkdir -p /data/storage

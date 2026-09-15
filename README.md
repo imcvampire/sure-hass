@@ -14,7 +14,7 @@
 See the main repository here: [Sure GitHub Repository](https://github.com/we-promise/sure)
 
 > [!NOTE]
-> The addon wraps the official `ghcr.io/we-promise/sure` image. Its version is `<addon_version>-<sure_version>`, so **0.6.0-0.7.4** is this addon at 0.6.0 shipping Sure 0.7.4. The left half changes for addon-only fixes, the right half tracks the Sure release.
+> The addon wraps the official `ghcr.io/we-promise/sure` image. Its version is `<addon_version>-<sure_version>`, so **0.7.0-0.7.4** is this addon at 0.7.0 shipping Sure 0.7.4. The left half changes for addon-only fixes, the right half tracks the Sure release.
 
 > [!IMPORTANT]
 > This addon was previously published as **Maybe Finance** with the slug `maybe_finance`. It is now `sure`, which Home Assistant treats as a different addon. If you are coming from the old one, see [Migrating from the Maybe Finance addon](#migrating-from-the-maybe-finance-addon).
@@ -79,6 +79,16 @@ Note: The alexbelgium repository also contains a Postgres addon (16), but i had 
   - `closed` — the registration page is disabled.
 
   This option only seeds the value on first boot. Once the setting has been written inside Sure — which happens as soon as anyone saves **Settings > Self-Hosting > Onboarding** — the stored value wins and changing the addon option has no effect. Leave it `open` for the initial setup, create your account, then restrict signups from that settings page.
+
+- Add any extra environment variables Sure supports but this addon has no option for (SMTP, alternative AI providers) under `env_vars`, as `name`/`value` pairs:
+
+  ```yaml
+  env_vars:
+    - name: SMTP_ADDRESS
+      value: smtp.example.com
+  ```
+
+  These are applied after the options above, so an entry that reuses one of their names overrides it. Names must be letters, digits and underscores and must not start with a digit; the addon refuses to start otherwise. See the [addon README](sure/README.md#custom-environment-variables).
 
 ### 6. Start the Sure Addon
 

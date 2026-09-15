@@ -9,6 +9,11 @@ addon's own version, the right half is the Sure prerelease it ships. Version
 bumps here are almost always upstream bumps, so this file records only changes to
 the addon itself.
 
+## 0.7.0-0.7.5-alpha.8
+
+Added `env_vars`, the same custom environment variable passthrough the stable
+addon gained in 0.7.0. Both channels ship the same wrapper.
+
 ## 0.6.0-0.7.5-alpha.8
 
 Introduced the edge channel. Same wrapper as the stable **Sure (Finances)**

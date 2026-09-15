@@ -28,6 +28,34 @@ Installation, prerequisites and migration notes live in the [repository README](
 | `plaid_secret` | no | — | `PLAID_SECRET` | |
 | `plaid_env` | no | — | `PLAID_ENV` | `production` or `sandbox`. |
 | `openai_access_token` | no | — | `OPENAI_ACCESS_TOKEN` | Enabling AI features incurs costs on your OpenAI account. |
+| `env_vars` | no | _(empty)_ | _(any)_ | List of `name`/`value` pairs passed straight through as environment variables. See [Custom environment variables](#custom-environment-variables). |
+
+## Custom environment variables
+
+Sure reads more environment variables than this addon exposes as options — SMTP
+settings, alternative AI providers, Rails tuning. `env_vars` passes any of them
+through without waiting for an addon release:
+
+```yaml
+env_vars:
+  - name: SMTP_ADDRESS
+    value: smtp.example.com
+  - name: SMTP_PORT
+    value: "587"
+```
+
+Notes:
+
+- Names must be letters, digits and underscores, and must not start with a digit.
+  The addon refuses to start on anything else rather than silently dropping it.
+- They are applied **after** the options above, so an entry reusing one of their
+  names (`REDIS_URL`, say) wins. That is the point — it is the escape hatch when
+  an option's shape does not fit — but it also means a typo can override
+  something that was working.
+- Values are not echoed to the addon log, only names, because any of them may be
+  a credential.
+- Which variables actually do anything is up to Sure, not this addon. See the
+  upstream [hosting docs](https://github.com/we-promise/sure/tree/main/docs/hosting).
 
 ## Storage
 

@@ -6,6 +6,10 @@ https://github.com/we-promise/sure/releases
 
 The addon version is `<addon_version>-<sure_version>`: the left half is this addon's own version, the right half is the Sure release it ships.
 
+## 0.7.0-0.7.4
+
+- Added `env_vars`, a list of `name`/`value` pairs passed straight through to Sure as environment variables. It covers everything Sure reads that this addon has no option for — SMTP, alternative AI providers, Rails tuning — without waiting for an addon release. Entries are applied after the mapped options, so one reusing an existing name overrides it.
+
 ## 0.6.0-0.7.4
 
 Migrated the addon from the abandoned Maybe Finance project to [Sure](https://github.com/we-promise/sure), the maintained continuation.

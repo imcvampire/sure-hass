@@ -43,7 +43,7 @@ defaults differ, both listed in the table above.
 
 ## Versioning
 
-`<addon_version>-<sure_version>`, so **0.6.0-0.7.5-alpha.8** is addon 0.6.0
+`<addon_version>-<sure_version>`, so **0.7.0-0.7.5-alpha.8** is addon 0.7.0
 shipping Sure 0.7.5-alpha.8. The left half is shared with the stable addon,
 because both ship the same wrapper.
 
