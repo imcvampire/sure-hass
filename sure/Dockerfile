@@ -9,7 +9,7 @@
 # Build locally with:
 #   docker buildx build --platform linux/arm64 -f Dockerfile .
 
-ARG SURE_VERSION=0.7.4
+ARG SURE_VERSION=0.7.5-hotfix.1
 FROM ghcr.io/we-promise/sure:${SURE_VERSION}
 
 # The upstream image drops to uid 1000, but Home Assistant mounts /data as root.
